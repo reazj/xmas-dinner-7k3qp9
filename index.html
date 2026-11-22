@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Christmas Dinner Sign-up</title>
+<meta name="description" content="Pick a course and tell everyone what you're bringing to Christmas dinner.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f3ec;
+    --card: #ffffff;
+    --ink: #1f2a24;
+    --muted: #5f6b64;
+    --line: #e4ddd1;
+    --red: #a8322d;
+    --red-ink: #ffffff;
+    --green: #1f5c45;
+    --chip: #efe8dc;
+    --focus: #c98a1b;
+    --shadow: 0 1px 2px rgba(31,42,36,.06), 0 4px 16px rgba(31,42,36,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141a17; --card: #1d2521; --ink: #eef1ec; --muted: #a3aea7; --line: #2e3833;
+      --red: #e0675f; --red-ink: #1a0f0e; --green: #7fc8a6; --chip: #26302b; --focus: #e8b04a;
+      --shadow: 0 1px 2px rgba(0,0,0,.3);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141a17; --card: #1d2521; --ink: #eef1ec; --muted: #a3aea7; --line: #2e3833;
+    --red: #e0675f; --red-ink: #1a0f0e; --green: #7fc8a6; --chip: #26302b; --focus: #e8b04a;
+    --shadow: 0 1px 2px rgba(0,0,0,.3);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.5 Inter, system-ui, sans-serif;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 40px 16px 80px; }
+  header h1 {
+    font-family: Fraunces, Georgia, serif; font-weight: 700;
+    font-size: clamp(2rem, 6vw, 3rem); line-height: 1.05; margin: 0 0 8px; color: var(--red);
+  }
+  header p { margin: 0; color: var(--muted); max-width: 56ch; }
+  .summary { margin-top: 14px; font-size: .9rem; color: var(--muted); }
+
+  form.add {
+    margin: 28px 0 36px; background: var(--card); border: 1px solid var(--line);
+    border-radius: 14px; padding: 18px; box-shadow: var(--shadow);
+    display: grid; gap: 12px; grid-template-columns: 1fr 1fr;
+  }
+  form.add h2 { grid-column: 1 / -1; margin: 0; font: 600 1rem Inter, sans-serif; }
+  .field { display: grid; gap: 4px; }
+  .field.full { grid-column: 1 / -1; }
+  label { font-size: .85rem; font-weight: 500; color: var(--muted); }
+  input, select, textarea {
+    font: inherit; color: var(--ink); background: var(--bg);
+    border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; width: 100%;
+  }
+  textarea { resize: vertical; min-height: 42px; }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .actions { grid-column: 1 / -1; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  button {
+    font: 600 .9rem Inter, sans-serif; border-radius: 8px; padding: 9px 16px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+  }
+  button.primary { background: var(--red); color: var(--red-ink); border-color: var(--red); }
+  button:disabled { opacity: .6; cursor: progress; }
+  button.link { border: 0; background: none; padding: 4px 6px; color: var(--muted); font-weight: 500; }
+  button.link:hover { color: var(--ink); }
+  button.link.danger:hover { color: var(--red); }
+  .status { font-size: .85rem; color: var(--muted); }
+  .status.error { color: var(--red); }
+
+  .courses { display: grid; gap: 22px; }
+  section.course h2 {
+    font-family: Fraunces, Georgia, serif; font-weight: 500; font-size: 1.4rem; margin: 0 0 8px;
+    display: flex; align-items: baseline; gap: 10px;
+  }
+  .count { font: 500 .8rem Inter, sans-serif; color: var(--muted); background: var(--chip); padding: 2px 8px; border-radius: 99px; }
+  ul.dishes { list-style: none; margin: 0; padding: 0; background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  ul.dishes li { padding: 12px 14px; border-top: 1px solid var(--line); }
+  ul.dishes li:first-child { border-top: 0; }
+  .row { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; }
+  .dish-name { font-weight: 600; overflow-wrap: anywhere; }
+  .who { color: var(--green); font-size: .9rem; font-weight: 500; }
+  .notes { color: var(--muted); font-size: .88rem; margin-top: 2px; overflow-wrap: anywhere; }
+  .row-actions { display: flex; flex-shrink: 0; }
+  .empty { padding: 14px; color: var(--muted); font-size: .92rem; font-style: italic; }
+  .edit-form { display: grid; gap: 8px; grid-template-columns: 1fr 1fr; }
+  .edit-form .full { grid-column: 1 / -1; }
+
+  .notice { background: var(--card); border: 1px dashed var(--red); border-radius: 12px; padding: 16px; margin-top: 24px; }
+  .notice code { background: var(--chip); padding: 1px 5px; border-radius: 4px; }
+
+  @media (max-width: 600px) {
+    form.add, .edit-form { grid-template-columns: 1fr; }
+    .row { flex-direction: column; gap: 6px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Christmas Dinner</h1>
+    <p>Tell everyone what you're bringing so we don't end up with six trifles. Pick a course, add your dish and your name. You can edit or remove it any time.</p>
+    <div class="summary" id="summary" aria-live="polite"></div>
+  </header>
+
+  <div id="setup" class="notice" hidden>
+    <strong>Almost ready.</strong> Add the Supabase project URL and anon key to <code>config.js</code>, then reload.
+  </div>
+
+  <form class="add" id="add-form" autocomplete="on">
+    <h2>Add a dish</h2>
+    <div class="field">
+      <label for="f-name">Your name</label>
+      <input id="f-name" name="guest_name" required maxlength="60" autocomplete="given-name">
+    </div>
+    <div class="field">
+      <label for="f-course">Course</label>
+      <select id="f-course" name="course" required></select>
+    </div>
+    <div class="field full">
+      <label for="f-dish">Dish</label>
+      <input id="f-dish" name="dish" required maxlength="120" placeholder="e.g. Roast parsnips with honey">
+    </div>
+    <div class="field full">
+      <label for="f-notes">Notes (optional)</label>
+      <input id="f-notes" name="notes" maxlength="300" placeholder="Vegetarian, contains nuts, serves 8…">
+    </div>
+    <div class="actions">
+      <button type="submit" class="primary">Add dish</button>
+      <span class="status" id="add-status" role="status"></span>
+    </div>
+  </form>
+
+  <div class="courses" id="courses"></div>
+</div>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+(() => {
+  const COURSES = [
+    { id: "starters", label: "Starters" },
+    { id: "snacks",   label: "Snacks" },
+    { id: "sides",    label: "Sides for the main" },
+    { id: "desserts", label: "Desserts" },
+    { id: "other",    label: "Other" },
+  ];
+  const cfg = window.XMAS_CONFIG || {};
+  const $ = (s, el = document) => el.querySelector(s);
+  const el = (tag, props = {}, ...kids) => {
+    const n = Object.assign(document.createElement(tag), props);
+    for (const k of kids) if (k != null) n.append(k);
+    return n;
+  };
+  const store = {
+    get(k) { try { return localStorage.getItem(k) || ""; } catch { return ""; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+  };
+
+  let dishes = [];
+  let editingId = null;
+
+  const courseSelect = $("#f-course");
+  for (const c of COURSES) courseSelect.append(el("option", { value: c.id, textContent: c.label }));
+  $("#f-name").value = store.get("xmas-name");
+
+  if (!cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY || !window.supabase) {
+    $("#setup").hidden = false;
+    $("#add-form").querySelectorAll("input,select,button").forEach(n => n.disabled = true);
+    render();
+    return;
+  }
+  const db = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+
+  async function load() {
+    const { data, error } = await db.from("dishes").select("*").order("created_at");
+    if (error) { $("#summary").textContent = "Couldn't load dishes: " + error.message; return; }
+    dishes = data;
+    render();
+  }
+
+  function render() {
+    const root = $("#courses");
+    root.replaceChildren();
+    for (const c of COURSES) {
+      const items = dishes.filter(d => d.course === c.id);
+      const list = el("ul", { className: "dishes" });
+      if (!items.length) list.append(el("li", { className: "empty", textContent: "Nothing yet — up for grabs." }));
+      for (const d of items) list.append(d.id === editingId ? editRow(d) : viewRow(d));
+      root.append(el("section", { className: "course" },
+        el("h2", {}, c.label, el("span", { className: "count", textContent: String(items.length) })),
+        list));
+    }
+    const people = new Set(dishes.map(d => d.guest_name.trim().toLowerCase())).size;
+    $("#summary").textContent = dishes.length
+      ? `${dishes.length} dish${dishes.length === 1 ? "" : "es"} from ${people} ${people === 1 ? "person" : "people"} so far.`
+      : "";
+  }
+
+  function viewRow(d) {
+    const edit = el("button", { className: "link", type: "button", textContent: "Edit" });
+    edit.setAttribute("aria-label", `Edit ${d.dish}`);
+    edit.onclick = () => { editingId = d.id; render(); $(`#e-dish-${d.id}`)?.focus(); };
+    const del = el("button", { className: "link danger", type: "button", textContent: "Remove" });
+    del.setAttribute("aria-label", `Remove ${d.dish}`);
+    del.onclick = async () => {
+      if (!confirm(`Remove "${d.dish}" (${d.guest_name})?`)) return;
+      del.disabled = true;
+      const { error } = await db.from("dishes").delete().eq("id", d.id);
+      if (error) { alert("Couldn't remove: " + error.message); del.disabled = false; return; }
+      dishes = dishes.filter(x => x.id !== d.id); render();
+    };
+    return el("li", {},
+      el("div", { className: "row" },
+        el("div", {},
+          el("div", { className: "dish-name", textContent: d.dish }),
+          el("div", { className: "who", textContent: d.guest_name }),
+          d.notes ? el("div", { className: "notes", textContent: d.notes }) : null),
+        el("div", { className: "row-actions" }, edit, del)));
+  }
+
+  function editRow(d) {
+    const f = el("form", { className: "edit-form" });
+    const field = (label, input, full) => {
+      input.id = `e-${input.name}-${d.id}`;
+      return el("div", { className: "field" + (full ? " full" : "") },
+        el("label", { htmlFor: input.id, textContent: label }), input);
+    };
+    const dish = el("input", { name: "dish", value: d.dish, required: true, maxLength: 120 });
+    const name = el("input", { name: "guest_name", value: d.guest_name, required: true, maxLength: 60 });
+    const course = el("select", { name: "course" });
+    for (const c of COURSES) course.append(el("option", { value: c.id, textContent: c.label, selected: c.id === d.course }));
+    const notes = el("input", { name: "notes", value: d.notes || "", maxLength: 300 });
+    const save = el("button", { className: "primary", type: "submit", textContent: "Save" });
+    const cancel = el("button", { type: "button", textContent: "Cancel" });
+    const status = el("span", { className: "status" });
+    cancel.onclick = () => { editingId = null; render(); };
+    f.append(field("Dish", dish, true), field("Name", name), field("Course", course), field("Notes", notes, true),
+      el("div", { className: "actions" }, save, cancel, status));
+    f.onsubmit = async (e) => {
+      e.preventDefault();
+      const patch = { dish: dish.value.trim(), guest_name: name.value.trim(), course: course.value, notes: notes.value.trim() || null };
+      if (!patch.dish || !patch.guest_name) { status.textContent = "Dish and name are needed."; status.className = "status error"; return; }
+      save.disabled = true;
+      const { data, error } = await db.from("dishes").update(patch).eq("id", d.id).select().single();
+      if (error) { status.textContent = "Couldn't save: " + error.message; status.className = "status error"; save.disabled = false; return; }
+      dishes = dishes.map(x => x.id === d.id ? data : x); editingId = null; render();
+    };
+    return el("li", {}, f);
+  }
+
+  $("#add-form").onsubmit = async (e) => {
+    e.preventDefault();
+    const form = e.target, status = $("#add-status"), btn = form.querySelector("button");
+    const row = {
+      guest_name: form.guest_name.value.trim(), course: form.course.value,
+      dish: form.dish.value.trim(), notes: form.notes.value.trim() || null,
+    };
+    if (!row.guest_name || !row.dish) { status.textContent = "Add your name and a dish."; status.className = "status error"; return; }
+    btn.disabled = true; status.textContent = "Adding…"; status.className = "status";
+    const { data, error } = await db.from("dishes").insert(row).select().single();
+    btn.disabled = false;
+    if (error) { status.textContent = "Couldn't add: " + error.message; status.className = "status error"; return; }
+    store.set("xmas-name", row.guest_name);
+    if (!dishes.some(x => x.id === data.id)) dishes.push(data);
+    form.dish.value = ""; form.notes.value = "";
+    status.textContent = `Added to ${COURSES.find(c => c.id === row.course).label}. Thanks!`;
+    render();
+  };
+
+  // Live updates from other guests; skip re-render while someone is mid-edit.
+  db.channel("dishes").on("postgres_changes", { event: "*", schema: "public", table: "dishes" }, () => {
+    if (!editingId) load();
+  }).subscribe();
+  document.addEventListener("visibilitychange", () => { if (!document.hidden && !editingId) load(); });
+
+  load();
+})();
+</script>
+</body>
+</html>
